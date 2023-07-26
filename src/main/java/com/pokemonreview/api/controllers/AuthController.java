@@ -103,27 +103,4 @@ public class AuthController {
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<AuthResponseDto> test(@RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        //token 생성
-        String token = jwtGenerator.generateToken(authentication);
-
-        AuthResponseDto authResponseDTO = new AuthResponseDto(token);
-        authResponseDTO.setUsername(loginDto.getUsername());
-
-        Optional<UserEntity> optionalUser =
-                userRepository.findByUsername(loginDto.getUsername());
-        if(optionalUser.isPresent()){
-            UserEntity userEntity = optionalUser.get();
-            authResponseDTO.setRole(userEntity.getRoles().get(0).getName());
-        }
-        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
-    }
-
 }
