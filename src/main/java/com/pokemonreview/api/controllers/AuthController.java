@@ -55,29 +55,6 @@ public class AuthController {
         return "Welcome this endpoint is not secure";
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        //token 생성
-        String token = jwtGenerator.generateToken(authentication);
-
-        AuthResponseDto authResponseDTO = new AuthResponseDto(token);
-        authResponseDTO.setUsername(loginDto.getUsername());
-
-        Optional<UserEntity> optionalUser =
-                userRepository.findByUsername(loginDto.getUsername());
-        if(optionalUser.isPresent()){
-            UserEntity userEntity = optionalUser.get();
-            authResponseDTO.setRole(userEntity.getRoles().get(0).getName());
-        }
-        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
-    }
-
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserDto userDto) {
         if (userRepository.existsByUsername(userDto.getUsername())) {
@@ -103,4 +80,26 @@ public class AuthController {
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDto.getUsername(),
+                        loginDto.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        //token 생성
+        String token = jwtGenerator.generateToken(authentication);
+
+        AuthResponseDto authResponseDTO = new AuthResponseDto(token);
+        authResponseDTO.setUsername(loginDto.getUsername());
+
+        Optional<UserEntity> optionalUser =
+                userRepository.findByUsername(loginDto.getUsername());
+        if(optionalUser.isPresent()){
+            UserEntity userEntity = optionalUser.get();
+            authResponseDTO.setRole(userEntity.getRoles().get(0).getName());
+        }
+        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
+    }
 }
