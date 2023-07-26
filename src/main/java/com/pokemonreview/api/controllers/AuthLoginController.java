@@ -2,12 +2,9 @@ package com.pokemonreview.api.controllers;
 
 import com.pokemonreview.api.dto.AuthResponseDto;
 import com.pokemonreview.api.dto.LoginDto;
-import com.pokemonreview.api.dto.UserDto;
-import com.pokemonreview.api.models.Role;
 import com.pokemonreview.api.models.UserEntity;
 import com.pokemonreview.api.repository.RoleRepository;
 import com.pokemonreview.api.repository.UserRepository;
-
 import com.pokemonreview.api.security.JWTGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,71 +14,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.Optional;
-
-/*
-user 등록
-http://localhost:8080/api/auth/register
-{
-    "username":"admin",
-    "password":"123456",
-    "firstName":"dooly",
-    "lastName":"park",
-    "role":"ROLE_ADMIN"
-}
-
-user token 로그인
-http://localhost:8080/api/auth/login
-{
-    "password":"123456",
-    "username":"admin"
-}
-*/
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthLoginController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTGenerator jwtGenerator;
 
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome this endpoint is not secure";
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDto userDto) {
-        if (userRepository.existsByUsername(userDto.getUsername())) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-        }
-
-        UserEntity user = new UserEntity();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode((userDto.getPassword())));
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-
-        Role roles = roleRepository.findByName(userDto.getRole())
-                .orElseGet(() -> {
-                    System.out.println("Role 없음");
-                    Role role = new Role();
-                    role.setName(userDto.getRole());
-                    return roleRepository.save(role);
-                });
-        user.setRoles(Collections.singletonList(roles));
-        userRepository.save(user);
-
-        return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+    @PostMapping("/test")
+    public ResponseEntity<AuthResponseDto> test(@RequestBody LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -102,5 +52,4 @@ public class AuthController {
         }
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
-
 }
