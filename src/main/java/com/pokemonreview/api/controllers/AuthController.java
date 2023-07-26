@@ -22,6 +22,24 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.Optional;
 
+/*
+user 등록
+http://localhost:8080/api/auth/register
+{
+    "username":"admin",
+    "password":"123456",
+    "firstName":"dooly",
+    "lastName":"park",
+    "role":"ROLE_ADMIN"
+}
+
+user token 로그인
+http://localhost:8080/api/auth/login
+{
+    "password":"123456",
+    "username":"admin"
+}
+*/
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
