@@ -52,4 +52,5 @@ public class AuthLoginController {
         }
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
+
 }
